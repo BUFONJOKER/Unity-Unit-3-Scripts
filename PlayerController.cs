@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     private Rigidbody playerRigidBody;
+
+    private Animator playerAnimation;
     public float jumpForce = 10;
     public float gravityModifier;
 
@@ -15,6 +17,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         playerRigidBody = GetComponent<Rigidbody>();
+        playerAnimation = GetComponent<Animator>();
         Physics.gravity *= gravityModifier;
 
     }
@@ -22,13 +25,14 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isOnGround)
+        if (Input.GetKeyDown(KeyCode.Space) && isOnGround && gameOver == false)
         {
             // player jump 
             // add force use to apply force to rigid body An impulse is a large force applied instantly, as opposed to a continuous force.
 
             playerRigidBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             isOnGround = false;
+            playerAnimation.SetTrigger("Jump_trig");
         }
 
     }
@@ -41,6 +45,9 @@ public class PlayerController : MonoBehaviour
             isOnGround = true;
         }
         else if(collision.gameObject.CompareTag("Obstacle")){
+            // death animation
+            playerAnimation.SetBool("Death_b",true);
+            playerAnimation.SetInteger("DeathType_int",1);
             Debug.Log("Game Over");
             gameOver = true;
         }
